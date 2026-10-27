@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#f6f2ec" />
+    <title>你的人生 calling 是什么？测测你的灵魂内驱力</title>
+    <style>
+      :root {
+        color-scheme: light;
+        /* 标准设计令牌（契约） */
+        --color-primary: #c9a7a2;
+        --color-background: #f6f2ec;
+        --color-surface: #ffffff;
+        --color-text: #45413c;
+        --color-muted-text: #837c73;
+        --color-border: #ece5db;
+        --color-focus: #c9a7a2;
+        --font-body: ui-sans-serif, system-ui, -apple-system, "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        --font-display: ui-sans-serif, system-ui, -apple-system, "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        --radius-sm: 0.625rem;
+        --radius-md: 1.125rem;
+        --radius-lg: 1.375rem;
+        --space-unit: 0.25rem;
+        --content-width: 30rem;
+        /* 视觉别名 */
+        --font: var(--font-body);
+        --pink: #cda4a0;
+        --pink-deep: #bd8e8a;
+        --pink-soft: #f3e7e5;
+        --blue: #a7c0cf;
+        --blue-soft: #e8f0f4;
+        --sage: #a8bda4;
+        --sand: #dcc49a;
+        --bg: #f6f2ec;
+        --card: #ffffff;
+        --card-tint: #fbf8f4;
+        --ink: #45413c;
+        --ink-2: #837c73;
+        --ink-3: #b1a99e;
+        --line: #ece5db;
+        --grad: linear-gradient(135deg, #d4afab 0%, #c9a7a2 48%, #aebfcc 100%);
+        --radius: 22px;
+      }
+
+      * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+      html, body { margin: 0; padding: 0; }
+      html { background: #e9e3da; }
+      body {
+        font-family: var(--font);
+        color: var(--ink);
+        line-height: 1.75;
+        letter-spacing: 0.01em;
+        -webkit-font-smoothing: antialiased;
+      }
+      button, input { font: inherit; }
+      :focus-visible { outline: 2.5px solid var(--pink); outline-offset: 2px; }
+
+      .skip-link {
+        position: fixed; top: 1rem; left: 1rem; z-index: 200;
+        transform: translateY(-250%); background: #fff; padding: .5rem .9rem;
+        border-radius: 12px; color: var(--ink); font-size: .85rem;
+      }
+      .skip-link:focus { transform: translateY(0); }
+
+      /* ===== App 壳：手机居中、全屏 ===== */
+      .app {
+        position: relative;
+        max-width: 30rem;
+        margin: 0 auto;
+        min-height: 100dvh;
+        background: var(--bg);
+        overflow: hidden;
+      }
+
+      .screen { animation: fade .3s ease both; }
+      .screen[hidden] { display: none; }
+      @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+      /* ===== 通用按钮 ===== */
+      .btn-primary {
+        width: 100%; min-height: 54px; border: none; cursor: pointer;
+        border-radius: 999px; background: var(--grad);
+        color: #fff; font-size: 1.02rem; font-weight: 700; letter-spacing: .06em;
+        box-shadow: 0 10px 22px rgba(189, 142, 138, 0.32);
+        transition: transform .12s ease, opacity .2s ease, box-shadow .2s ease;
+      }
+      .btn-primary:active { transform: scale(.98); box-shadow: 0 4px 12px rgba(189,142,138,.28); }
+      .btn-primary:disabled {
+        opacity: .45; box-shadow: none; cursor: not-allowed;
+      }
+      .btn-text {
+        border: none; background: none; cursor: pointer;
+        color: var(--ink-2); font-size: .9rem; padding: .55rem .2rem;
+      }
+      .btn-text:active { color: var(--pink-deep); }
+      .btn-outline {
+        width: 100%; min-height: 50px; border: 1.5px solid var(--pink);
+        background: #fff; color: var(--pink-deep); border-radius: 999px;
+        font-size: .98rem; font-weight: 700; letter-spacing: .05em; cursor: pointer;
+      }
+      .btn-outline:active { background: var(--pink-soft); }
+
+      /* 固定底部操作区 */
+      .dock {
+        position: fixed; left: 50%; transform: translateX(-50%);
+        width: 100%; max-width: 30rem; bottom: 0;
+        padding: .7rem 1.25rem calc(.9rem + env(safe-area-inset-bottom));
+        background: rgba(246, 242, 236, .92);
+        backdrop-filter: saturate(1.4) blur(10px);
+        -webkit-backdrop-filter: saturate(1.4) blur(10px);
+        border-top: 1px solid var(--line);
+        z-index: 50;
+      }
+      .dock-row { display: flex; align-items: center; gap: 1rem; }
+      .dock-row .btn-text { flex: 0 0 auto; }
+      .dock-row .btn-primary { flex: 1; }
+
+      /* ============ 封面 ============ */
+      #screen-cover {
+        min-height: 100dvh;
+        padding: 3.2rem 1.5rem 9.5rem;
+        display: flex; flex-direction: column;
+        background:
+          radial-gradient(120% 50% at 85% -5%, #f6e6e3 0%, rgba(246,230,227,0) 60%),
+          radial-gradient(110% 45% at 0% 8%, #e7eff3 0%, rgba(231,239,243,0) 55%),
+          var(--bg);
+      }
+      .cover-icon {
+        width: 84px; height: 84px; border-radius: 28px; margin-bottom: 1.6rem;
+        display: grid; place-items: center;
+        background: var(--grad);
+        box-shadow: 0 14px 30px rgba(189,142,138,.30);
+      }
+      .cover-icon svg { width: 42px; height: 42px; }
+      .kicker {
+        font-size: .76rem; letter-spacing: .32em; font-weight: 700;
+        color: var(--pink-deep); margin: 0 0 .8rem;
+      }
+      .cover-title {
+        font-size: 1.72rem; line-height: 1.42; font-weight: 800;
+        margin: 0 0 .55rem; letter-spacing: .01em;
+      }
+      .cover-sub { font-size: .95rem; color: var(--ink-2); margin: 0 0 1.7rem; }
+
+      .info-card {
+        background: var(--card); border-radius: var(--radius);
+        padding: 1.35rem 1.3rem; margin-bottom: 1.1rem;
+      }
+      .info-card p { margin: 0 0 .8rem; font-size: .93rem; }
+      .info-card p:last-child { margin-bottom: 0; }
+
+      .chips { display: flex; flex-wrap: wrap; gap: .55rem; margin: 0 0 1.3rem; }
+      .chip {
+        font-size: .8rem; font-weight: 600; color: var(--pink-deep);
+        background: var(--pink-soft); border-radius: 999px; padding: .38rem .9rem;
+      }
+      .chip.blue { color: #6f8fa3; background: var(--blue-soft); }
+      .mini-note { font-size: .78rem; color: var(--ink-3); line-height: 1.7; margin: 0; }
+
+      /* ============ 答题 ============ */
+      #screen-quiz { min-height: 100dvh; }
+      .quiz-head {
+        padding: 1.15rem 1.25rem .4rem;
+      }
+      .quiz-meta {
+        display: flex; justify-content: space-between; align-items: baseline;
+        margin-bottom: .65rem;
+      }
+      .quiz-count { font-size: .92rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+      .quiz-count em { font-style: normal; color: var(--ink-3); font-weight: 600; }
+      .quiz-hint { font-size: .78rem; color: var(--ink-3); }
+      .track { height: 7px; border-radius: 99px; background: #e8e1d7; overflow: hidden; }
+      .track i {
+        display: block; height: 100%; width: 0; border-radius: 99px;
+        background: var(--grad); transition: width .3s ease;
+      }
+
+      .quiz-body { padding: 1.6rem 1.25rem 9rem; }
+      .q-text {
+        font-size: 1.28rem; font-weight: 700; line-height: 1.62;
+        margin: 0 0 1.7rem;
+      }
+      .options { display: flex; flex-direction: column; gap: .7rem; }
+      .opt {
+        display: flex; align-items: center; gap: .9rem;
+        min-height: 56px; padding: .72rem 1rem;
+        background: var(--card); border: 1.5px solid transparent;
+        border-radius: 17px; cursor: pointer;
+        transition: background .15s ease, border-color .15s ease;
+      }
+      .opt:active { background: var(--card-tint); }
+      .opt input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+      .opt-badge {
+        flex: 0 0 auto; width: 30px; height: 30px; border-radius: 10px;
+        display: grid; place-items: center;
+        font-size: .88rem; font-weight: 800; color: var(--ink-3);
+        background: #f2ede6; transition: all .15s ease;
+      }
+      .opt-label { font-size: .98rem; }
+      .opt:has(input:checked) {
+        background: var(--pink-soft); border-color: var(--pink);
+      }
+      .opt:has(input:checked) .opt-badge {
+        background: var(--grad); color: #fff;
+      }
+      .opt:has(input:checked) .opt-label { font-weight: 600; }
+
+      /* ============ 结果 ============ */
+      #screen-result { padding-bottom: 3rem; }
+      .hero {
+        padding: 2.6rem 1.5rem 3.4rem;
+        background: var(--grad);
+        color: #fff;
+        border-radius: 0 0 34px 34px;
+        position: relative;
+      }
+      .hero::after {
+        content: ""; position: absolute; right: -40px; top: -40px;
+        width: 150px; height: 150px; border-radius: 50%;
+        background: rgba(255,255,255,.12);
+      }
+      .hero::before {
+        content: ""; position: absolute; left: -30px; bottom: 20px;
+        width: 90px; height: 90px; border-radius: 50%;
+        background: rgba(255,255,255,.10);
+      }
+      .hero .kicker { color: rgba(255,255,255,.85); position: relative; z-index: 1; }
+      .hero-title { font-size: 1.5rem; font-weight: 800; margin: 0 0 .9rem; position: relative; z-index: 1; }
+      .hero-summary {
+        position: relative; z-index: 1;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 18px; padding: 1.05rem 1.15rem;
+        font-size: .95rem; line-height: 1.75; margin: 0;
+        backdrop-filter: blur(4px);
+      }
+      .hero-summary b { font-weight: 800; }
+
+      .result-body { padding: 0 1.1rem; margin-top: -2.1rem; position: relative; z-index: 2; }
+      .r-card {
+        background: var(--card); border-radius: var(--radius);
+        padding: 1.35rem 1.2rem; margin-bottom: 1rem;
+        box-shadow: 0 8px 26px rgba(120, 100, 90, .07);
+      }
+      .r-title {
+        font-size: 1.02rem; font-weight: 800; margin: 0 0 1rem;
+        display: flex; align-items: center; gap: .5rem;
+      }
+      .r-title::before {
+        content: ""; width: 5px; height: 16px; border-radius: 3px; background: var(--grad);
+      }
+
+      .chart-box { display: flex; justify-content: center; }
+      #radar { width: 100%; max-width: 330px; height: auto; }
+
+      .bars { display: flex; flex-direction: column; gap: .72rem; margin-top: 1.2rem; }
+      .bar-row {
+        display: grid; grid-template-columns: 3.2rem 1fr 2.7rem;
+        align-items: center; gap: .7rem;
+      }
+      .bar-name { font-size: .85rem; font-weight: 700; }
+      .bar-track { height: 10px; border-radius: 99px; background: #f1ece4; overflow: hidden; }
+      .bar-fill { height: 100%; border-radius: 99px; width: 0; transition: width .7s ease; }
+      .bar-val { font-size: .8rem; color: var(--ink-2); text-align: right; font-variant-numeric: tabular-nums; }
+
+      /* TOP 维度卡 */
+      .dim {
+        border-radius: 18px; padding: 1.2rem 1.15rem; margin-bottom: .9rem;
+        background: var(--card-tint);
+      }
+      .dim:last-child { margin-bottom: 0; }
+      .dim-head { display: flex; align-items: center; gap: .65rem; margin-bottom: .25rem; }
+      .rank {
+        font-size: .72rem; font-weight: 800; color: #fff;
+        background: var(--grad); border-radius: 99px; padding: .18rem .66rem;
+      }
+      .dim-name { font-size: 1.16rem; font-weight: 800; }
+      .dim-tag { font-size: .82rem; color: var(--pink-deep); margin: 0 0 .8rem; font-weight: 600; }
+      .dim p { margin: 0 0 .62rem; font-size: .9rem; line-height: 1.78; }
+      .dim p:last-child { margin-bottom: 0; }
+      .dim b { color: var(--ink); font-weight: 700; }
+
+      .notes { list-style: none; margin: 0; padding: 0; }
+      .notes li {
+        position: relative; padding-left: 1.05rem;
+        font-size: .87rem; color: var(--ink-2); line-height: 1.72; margin-bottom: .72rem;
+      }
+      .notes li:last-child { margin-bottom: 0; }
+      .notes li::before {
+        content: ""; position: absolute; left: 0; top: .62em;
+        width: 6px; height: 6px; border-radius: 50%; background: var(--blue);
+      }
+      .notes b { color: var(--ink); font-weight: 700; }
+
+      .foot-note {
+        font-size: .79rem; color: var(--ink-3); text-align: center;
+        line-height: 1.8; margin: .4rem .4rem 1.5rem;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: .01ms !important; transition-duration: .01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body data-page-id="soul-drive-quiz" data-entry="true">
+    <a class="skip-link" href="#main-content">跳转到主要内容</a>
+    <div class="app">
+      <main id="main-content" tabindex="-1">
+        <!-- ============ 封面 ============ -->
+        <section class="screen" id="screen-cover" data-screen="cover">
+          <div class="cover-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20.5s-7.2-4.6-9.2-9.1C1.3 7.8 3.4 5 6.2 5c1.8 0 3.1 1 3.8 2.3C10.7 6 12 5 13.8 5c2.8 0 4.9 2.8 3.4 6.4-2 4.5-5.2 9.1-5.2 9.1z" />
+            </svg>
+          </div>
+          <p class="kicker">SOUL DRIVE</p>
+          <h1 class="cover-title">你的人生 calling 是什么？<br />测测你的灵魂内驱力</h1>
+          <p class="cover-sub">灵魂内驱力 · 精神需求测评</p>
+
+          <div class="info-card">
+            <p>这份测评以<strong>人本主义心理学与积极心理学</strong>为框架，把内心深处的渴望归纳为 10 种精神需求——它们是你做选择时真正的动力来源。</p>
+            <p>没有标准答案，也没有更好的那一种人。凭第一直觉作答，就能看见自己此刻<strong>最在意、最被驱动</strong>的东西。</p>
+          </div>
+
+          <div class="chips">
+            <span class="chip">30 道题</span>
+            <span class="chip">约 3–5 分钟</span>
+            <span class="chip blue">凭直觉作答</span>
+          </div>
+
+          <p class="mini-note">本测评是内在需求倾向性的自我探索工具，结果仅反映当下的精神需求倾向，不等同于临床心理诊断、人格诊断或心理疾病筛查。</p>
+
+          <div class="dock">
+            <button class="btn-primary" type="button" id="cover-start" data-anchor-id="soul-drive-quiz.cover-start">开始测试</button>
+          </div>
+        </section>
+
+        <!-- ============ 答题 ============ -->
+        <section class="screen" id="screen-quiz" data-screen="quiz" hidden>
+          <div class="quiz-head">
+            <div class="quiz-meta">
+              <span class="quiz-count"><span id="quiz-idx">1</span><em> / 30</em></span>
+              <span class="quiz-hint">选择最贴近你的程度</span>
+            </div>
+            <div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0" id="quiz-progress" data-anchor-id="soul-drive-quiz.quiz-progress">
+              <i id="progress-bar"></i>
+            </div>
+          </div>
+
+          <div class="quiz-body">
+            <h2 class="q-text" id="question-text"></h2>
+            <div class="options" id="options" role="radiogroup" aria-label="李克特 7 级量表"></div>
+          </div>
+
+          <div class="dock">
+            <div class="dock-row">
+              <button class="btn-text" type="button" id="quiz-prev" data-anchor-id="soul-drive-quiz.quiz-prev" hidden>‹ 上一题</button>
+              <button class="btn-primary" type="button" id="quiz-next" disabled data-anchor-id="soul-drive-quiz.quiz-next">下一题</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ 结果 ============ -->
+        <section class="screen" id="screen-result" data-screen="result" hidden>
+          <div class="hero">
+            <p class="kicker">YOUR SOUL DRIVE</p>
+            <h2 class="hero-title">你的灵魂内驱力图谱</h2>
+            <p class="hero-summary" id="result-summary"></p>
+          </div>
+
+          <div class="result-body">
+            <div class="r-card">
+              <p class="r-title">十项精神需求强弱</p>
+              <div class="chart-box">
+                <canvas id="radar" width="640" height="640" aria-label="十项精神需求雷达图"></canvas>
+              </div>
+              <div class="bars" id="bars"></div>
+            </div>
+
+            <div class="r-card">
+              <p class="r-title">主导内驱力深度解读</p>
+              <div id="top-interpret"></div>
+            </div>
+
+            <div class="r-card">
+              <p class="r-title">其余维度，温柔地提个醒</p>
+              <ul class="notes" id="low-notes"></ul>
+            </div>
+
+            <p class="foot-note">
+              本测评属于自我探索工具，仅反映你当下的内在精神需求倾向，<br />
+              不是人格诊断，也不是心理疾病筛查。需求会随人生阶段流动，<br />
+              不妨过段时间再测一次，看看自己的变化。
+            </p>
+
+            <button class="btn-outline" type="button" id="result-restart" data-anchor-id="soul-drive-quiz.result-restart">重新测试</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const DIMENSIONS = [
+        { key: "meaning", name: "意义", color: "#c9a7a2",
+          tagline: "你在为「为什么而活」寻找答案",
+          portrait: "你是被「意义感」牵引的人——做一件事之前，你会先问它值不值得、指向哪里。",
+          satisfy: "当生活与你认定的价值方向一致时，你会感到踏实、笃定，哪怕辛苦也觉得「这是我选的路」，内心有一种被意义托住的安定。",
+          lack: "若长期处在「不知道为了什么」的状态里，你容易陷入虚无和倦怠：事情都能做完，却像踩在棉花上，提不起劲，甚至怀疑自己所做一切的价值。",
+          advice: "尽量为自己保留能与个人价值相连的空间——职业上靠近「我认同的事」，日常里留一点服务于更大目标的小动作。定期问自己「这件事对我意味着什么」，比盲目填满日程更能给你续航。",
+          lowNote: "你对宏大意义的追问暂时不强，更愿意把力气放在具体的生活里。如果某天突然开始想「这一切是为了什么」，不必惊慌，那只是意义需求在向你发出邀请。" },
+        { key: "love", name: "爱", color: "#d9a7b0",
+          tagline: "你渴望被深深看见、被稳稳珍视",
+          portrait: "你是被「深度亲密」滋养的人——比起很多点头之交，你更在乎几段能彼此看见的关系。",
+          satisfy: "当有人真正懂你、接住你的脆弱，双向地在乎彼此时，你会感到被珍视、被安放，心里很满，也更有力量去面对外面的世界。",
+          lack: "若身边热闹却无人可说心里话，你容易感到一种深层的孤单，哪怕被很多人围绕，也会觉得「没有人真的认识我」，慢慢变得不愿再敞开。",
+          advice: "为亲密关系留出质量时间：少一些点赞式社交，多一些深度、专注的相处。学会表达需要，也允许对方靠近，亲密不是负担，而是你重要的能量来源。",
+          lowNote: "你当下对深度亲密的依赖不高，更享受关系里的松弛与独立。这没有问题，只是别忘了：偶尔让一个人走进来，被看见本身也是一种滋养。" },
+        { key: "connection", name: "连接", color: "#a9c3d4",
+          tagline: "你在「我们」之中确认自己",
+          portrait: "你是被「归属与同频」吸引的人——你需要感到自己是某个群体、某种氛围的一部分。",
+          satisfy: "当你身处同频的伙伴、温暖的集体，或感到与自然、与更广大的东西相连时，你会放松、有归属感，知道自己不是独自在走。",
+          lack: "若长期处于孤岛状态，你容易感到飘着、没有根，情绪也无处共振，渐渐变得封闭，把「不被需要」误读成「不重要」。",
+          advice: "主动经营一个让你有归属感的圈子：兴趣社群、固定的伙伴、团队或志愿组织都可以。投入真实的互动，归属感是在你来我往中一点点长出来的。",
+          lowNote: "你目前更享受独处或小范围相处，对合群没有太强需求。独处是你的充电方式，只是偶尔推开一扇门、回到人群里待一会儿，也会带来意外的暖意。" },
+        { key: "growth", name: "成长", color: "#a8bda4",
+          tagline: "你想成为不断更新的自己",
+          portrait: "你是被「成为更好版本」驱动的人——停滞会让你不安，进化让你安心。",
+          satisfy: "当你感到自己在进步、在突破旧的边界、学会了新东西时，你会充满希望和掌控感，觉得人生是向上展开的。",
+          lack: "若长期停在一成不变、看不到成长的位置，你容易焦虑、发闷，觉得自己在「原地变老」，甚至把暂时的平台期误判为失败。",
+          advice: "为自己设计可见的成长路径：学习新技能、设定阶段性挑战、定期复盘。同时练习与「暂时的停滞」共处，成长不是直线，沉淀期也是成长的一部分。",
+          lowNote: "你当下对自我迭代没有太强的紧迫感，更愿意安于现有的节奏。这是一种稳定，而非落后——当某个目标重新点燃你时，成长的渴望自然会回来。" },
+        { key: "creation", name: "创造", color: "#d8c296",
+          tagline: "你需要把心里的东西带到世界上",
+          portrait: "你是被「表达与造物」召唤的人——内在的想法、画面和感受，渴望有一个具体的出口。",
+          satisfy: "当你在创作、表达、把脑中的东西变成作品，甚至进入心流忘记时间时，你会感到「我在活着」，有一种强烈的自我确认和畅快。",
+          lack: "若长期只消费、不产出，或表达一直被压抑，你容易感到憋闷、灵感枯萎，觉得真实的自己没有被看见，情绪也找不到出口。",
+          advice: "给创造一个固定出口：写作、绘画、设计、做饭、布置空间，任何「从无到有」的事都算数。不必追求完美，重点是让内在的东西流动出来。",
+          lowNote: "你目前更享受欣赏和体验，对亲手创造没有强烈冲动。这同样珍贵——你可能是很好的感受者与接收者。若哪天手痒想做点什么，跟着那个冲动开始就好。" },
+        { key: "power", name: "权力", color: "#c2a8b8",
+          tagline: "你想要「我能影响、我能主导」的效能感",
+          portrait: "你是被「健康的效能感」驱动的人——这里的权力不是支配他人，而是对自己生活的掌控、对事情的正向影响。",
+          satisfy: "当你能主导决策、推动事情发生、感到自己有分量、能带来改变时，你会自信而有能量，体验到「我做得到」的扎实力量。",
+          lack: "若长期处于被动、说了不算、影响力被忽略的位置，你容易感到无力和憋屈，自我效能感下降，甚至慢慢收回主动、不敢再争取。",
+          advice: "主动承担能拍板、能看到自己影响力的事：主导一个项目、带领一个小团队、为自己的选择负责。把注意力放在「我能推动什么」，效能感会在行动中累积。",
+          lowNote: "你当下不太需要站在主导的位置，更乐于配合与支持。这是一种从容，但若发现自己总在迁就、说了不算，也可以试着把方向盘往自己这边轻轻拉回一点。" },
+        { key: "fun", name: "乐趣", color: "#dcb98f",
+          tagline: "你想认真地快乐、尽兴地体验",
+          portrait: "你是被「当下的愉悦」点亮的人——玩耍、趣味和轻松，对你不是浪费，而是刚需。",
+          satisfy: "当你能享受当下、自发地玩耍、被有趣的事物逗乐时，你会松弛、鲜活、有感染力，压力也在笑声中被释放掉。",
+          lack: "若生活长期只有任务和责任、没有喘息，你容易变得紧绷麻木，提不起劲，甚至陷入「不知道多久没真正开心过」的耗竭。",
+          advice: "把快乐写进日程：安排无目的的玩乐、小确幸、和有趣的人在一起。允许自己「不为产出地高兴」，乐趣是恢复心理弹性的重要补给，不是奖励。",
+          lowNote: "你目前的快乐阈值偏稳，不太依赖新鲜刺激也能自足。这让你很有定力，只是别把「不玩」当成成熟——偶尔放纵地开心一次，是给心灵透气。" },
+        { key: "security", name: "安全感", color: "#b3b0a0",
+          tagline: "你需要稳稳的、可预期的底座",
+          portrait: "你是被「稳定与可控」托住的人——确定感是你出发前脚下的那块地。",
+          satisfy: "当生活有基本的稳定、可预期、风险在可承受范围内时，你会安心、舒展，反而更有底气去尝试和探索。",
+          lack: "若长期面对不确定、变动和失控，你容易焦虑、紧绷、过度思虑，反复在脑子里预演最坏的情况，难以放松下来信任生活。",
+          advice: "为自己搭建确定感：储备应急资金、保持规律作息、把大的不确定拆成可控的小步骤。同时练习与适度的未知共处，稳定不是一动不动，而是「我有能力应对变化」。",
+          lowNote: "你对风险和变化的容忍度较高，享受随遇而安的自由。这份洒脱很迷人，只建议为人生备一个最基础的「安全垫」，让你冒险时更无后顾之忧。" },
+        { key: "freedom", name: "自由", color: "#9fb5c4",
+          tagline: "你想忠于自己，按自己的意愿活",
+          portrait: "你是被「自主与不被裹挟」驱动的人——能否忠于自我地选择，对你至关重要。",
+          satisfy: "当你能自己做决定、按自己的节奏和意愿生活、不被外界期待绑架时，你会感到舒展、真实，有一种「这是我的人生」的主权感。",
+          lack: "若长期活在他人的期待、规则或裹挟中，你容易感到压抑和窒息，哪怕外在条件不错，也会觉得「这不是我想要的生活」，甚至生出逃离的冲动。",
+          advice: "主动争取自主空间：在工作与生活中保留可自己决定的部分，练习说「不」，并区分「我真正想要的」与「别人觉得我应该要的」。为自己的选择负责，正是自由的代价与礼物。",
+          lowNote: "你当下对归属感和稳定的看重高过特立独行，乐于在关系与规则中安顿。这是一种温柔的选择，只需偶尔确认：此刻的「顺从」，是出于自愿，还是忘了自己也可以选？" },
+        { key: "contribution", name: "贡献", color: "#a6bdb0",
+          tagline: "你想因为自己的存在，让一些人更好",
+          portrait: "你是被「利他与回馈」温暖的人——知道自己帮到了他人或更大的共同体，会让你感到生命有重量。",
+          satisfy: "当你的付出能惠及他人、创造正向价值、与更广大的事物相连时，你会感到丰盈而有意义，体验到「被需要」带来的深层满足。",
+          lack: "若长期只在为自己奔忙、感受不到对他人的价值，你容易觉得空落，物质再充足也难以填满「我是否有用」的那份追问。",
+          advice: "把帮助他人织进生活：志愿服务、分享专业、照顾身边人、参与公益。留意并承认自己每一次小小的正向影响，贡献不必宏大，真诚地让一些人因你变好，就足够。",
+          lowNote: "你当下更专注于经营自己的生活，向外给予的意愿暂时不强。先照顾好自己从来不是自私——当你内在丰盈时，分享会自然而然地发生，不必为此愧疚。" }
+      ];
+
+      const QUESTIONS = [
+        { dim: "meaning", text: "我会认真思考自己所做的事情，是否符合内心认定的价值和方向。" },
+        { dim: "love", text: "我希望身边有能够深度理解我、与我彼此珍视的亲密关系。" },
+        { dim: "connection", text: "我喜欢待在让我有归属感、与伙伴同频的群体氛围里。" },
+        { dim: "growth", text: "我愿意主动学习新事物，哪怕这意味着要走出舒适区。" },
+        { dim: "security", text: "生活有稳定的节奏、事情基本在预期之内，会让我感到安心。" },
+        { dim: "fun", text: "我会特意为自己安排纯粹玩乐、享受当下的时间。" },
+        { dim: "power", text: "在重要的事情上，我希望由自己来主导和做决定。" },
+        { dim: "freedom", text: "我不喜欢被外界的期待或规则裹挟着生活。" },
+        { dim: "creation", text: "我常有想要把脑海里的想法、画面或感受表达出来的冲动。" },
+        { dim: "contribution", text: "当知道自己能帮到别人时，我会获得很深的满足感。" },
+
+        { dim: "connection", text: "感到自己属于某个集体或与自然相连，对我来说很重要。" },
+        { dim: "meaning", text: "如果一件事找不到「为什么而做」的意义，我很难真正投入。" },
+        { dim: "love", text: "在亲密的人面前，我能够自然地展露真实而脆弱的一面。" },
+        { dim: "growth", text: "看到自己相比过去有了进步和突破，会让我很有成就感。" },
+        { dim: "security", text: "面对未来可能出现的风险，我倾向于提前做好准备。" },
+        { dim: "power", text: "当我能推动一件事发生、带来实际改变时，我会感到很有力量。" },
+        { dim: "fun", text: "我容易被有趣、有新鲜感的事物吸引并感到愉快。" },
+        { dim: "freedom", text: "能够按自己的节奏和意愿安排生活，对我而言非常重要。" },
+        { dim: "creation", text: "我享受亲手把一个想法变成具体作品或成果的过程。" },
+        { dim: "contribution", text: "我愿意花时间和精力去做惠及他人或更大共同体的事。" },
+
+        { dim: "growth", text: "即使已经做得不错，我仍然希望继续迭代、变得更好。" },
+        { dim: "security", text: "我会因为生活中的不确定和变动而感到明显焦虑。" },
+        { dim: "meaning", text: "我渴望自己的人生与某种更大的目标或使命感相连。" },
+        { dim: "fun", text: "即使很忙，我也需要保留一些让自己放松和开心的时刻。" },
+        { dim: "love", text: "被人深深看见和珍视，是我内心很看重的情感体验。" },
+        { dim: "freedom", text: "当选择受到限制、无法忠于自己时，我会感到压抑。" },
+        { dim: "power", text: "我希望自己对身边的人和事拥有正向的影响力。" },
+        { dim: "creation", text: "我有强烈的自我表达需求，不喜欢一直只是被动接收信息。" },
+        { dim: "contribution", text: "看到自己的付出让他人或世界变好，会让我觉得很值得。" },
+        { dim: "connection", text: "与志同道合的伙伴保持真实的互动和联结，会让我更有能量。" }
+      ];
+
+      const LIKERT = [
+        { v: 1, label: "完全不符合" }, { v: 2, label: "比较不符合" },
+        { v: 3, label: "略微不符合" }, { v: 4, label: "中立" },
+        { v: 5, label: "略微符合" }, { v: 6, label: "比较符合" },
+        { v: 7, label: "完全符合" }
+      ];
+
+      const answers = new Array(QUESTIONS.length).fill(null);
+      let current = 0;
+
+      const screens = {
+        cover: document.getElementById("screen-cover"),
+        quiz: document.getElementById("screen-quiz"),
+        result: document.getElementById("screen-result")
+      };
+      const elIdx = document.getElementById("quiz-idx");
+      const elBar = document.getElementById("progress-bar");
+      const elProgress = document.getElementById("quiz-progress");
+      const elQuestion = document.getElementById("question-text");
+      const elOptions = document.getElementById("options");
+      const elNext = document.getElementById("quiz-next");
+      const elPrev = document.getElementById("quiz-prev");
+
+      function showScreen(name) {
+        Object.entries(screens).forEach(([k, el]) => { el.hidden = k !== name; });
+        window.scrollTo({ top: 0 });
+      }
+
+      function renderQuestion() {
+        elIdx.textContent = current + 1;
+        elBar.style.width = (current / QUESTIONS.length) * 100 + "%";
+        elProgress.setAttribute("aria-valuenow", String(current));
+        elQuestion.textContent = QUESTIONS[current].text;
+
+        elOptions.innerHTML = "";
+        const name = "q-" + current;
+        LIKERT.forEach((opt) => {
+          const label = document.createElement("label");
+          label.className = "opt";
+          label.innerHTML =
+            '<input type="radio" name="' + name + '" value="' + opt.v + '"' +
+            (answers[current] === opt.v ? " checked" : "") + " />" +
+            '<span class="opt-badge">' + opt.v + '</span>' +
+            '<span class="opt-label">' + opt.label + "</span>";
+          label.querySelector("input").addEventListener("change", () => {
+            answers[current] = opt.v;
+            elNext.disabled = false;
+          });
+          elOptions.appendChild(label);
+        });
+
+        elPrev.hidden = current === 0;
+        elNext.textContent = current === QUESTIONS.length - 1 ? "查看结果" : "下一题";
+        elNext.disabled = answers[current] === null;
+      }
+
+      elNext.addEventListener("click", () => {
+        if (answers[current] === null) return;
+        if (current === QUESTIONS.length - 1) {
+          renderResult(); showScreen("result");
+        } else {
+          current += 1; renderQuestion();
+        }
+      });
+      elPrev.addEventListener("click", () => { if (current > 0) { current -= 1; renderQuestion(); } });
+      document.getElementById("cover-start").addEventListener("click", () => {
+        current = 0; renderQuestion(); showScreen("quiz");
+      });
+
+      function computeScores() {
+        const raw = {};
+        DIMENSIONS.forEach((d) => (raw[d.key] = 0));
+        QUESTIONS.forEach((q, i) => { raw[q.dim] += answers[i]; });
+        const rate = {}, share = {};
+        const total = DIMENSIONS.reduce((s, d) => s + raw[d.key], 0);
+        DIMENSIONS.forEach((d) => {
+          rate[d.key] = Math.round(((raw[d.key] - 3) / 18) * 100);
+          share[d.key] = (raw[d.key] / total) * 100;
+        });
+        const ranked = DIMENSIONS.map((d) => ({
+          ...d, raw: raw[d.key], rate: rate[d.key], share: share[d.key]
+        })).sort((a, b) => b.raw - a.raw);
+        return { rate, ranked };
+      }
+
+      function renderResult() {
+        const { rate, ranked } = computeScores();
+        const top = ranked.slice(0, 3);
+        const rest = ranked.slice(3);
+
+        document.getElementById("result-summary").innerHTML =
+          "此刻驱动你的，主要是 <b>" + top[0].name + "</b>、<b>" + top[1].name +
+          "</b> 与 <b>" + top[2].name + "</b>。<br/>" + top[0].portrait;
+
+        drawRadar(rate);
+        drawBars(ranked);
+
+        const wrapTop = document.getElementById("top-interpret");
+        wrapTop.innerHTML = "";
+        top.forEach((d, i) => {
+          const div = document.createElement("div");
+          div.className = "dim";
+          div.innerHTML =
+            '<div class="dim-head"><span class="rank">TOP ' + (i + 1) + '</span>' +
+            '<span class="dim-name">' + d.name + "</span></div>" +
+            '<p class="dim-tag">' + d.tagline + "</p>" +
+            "<p><b>这意味着什么：</b>" + d.portrait + "</p>" +
+            "<p><b>满足时的你：</b>" + d.satisfy + "</p>" +
+            "<p><b>长期匮乏时：</b>" + d.lack + "</p>" +
+            "<p><b>适配的生活与选择：</b>" + d.advice + "</p>";
+          wrapTop.appendChild(div);
+        });
+
+        const wrapLow = document.getElementById("low-notes");
+        wrapLow.innerHTML = "";
+        rest.forEach((d) => {
+          const li = document.createElement("li");
+          li.innerHTML = "<b>" + d.name + "：</b>" + d.lowNote;
+          wrapLow.appendChild(li);
+        });
+
+        elBar.style.width = "100%";
+        elProgress.setAttribute("aria-valuenow", String(QUESTIONS.length));
+      }
+
+      function drawRadar(rate) {
+        const c = document.getElementById("radar");
+        const ctx = c.getContext("2d");
+        const W = c.width, H = c.height, cx = W / 2, cy = H / 2 + 10, R = 232, N = DIMENSIONS.length;
+        ctx.clearRect(0, 0, W, H);
+        const ang = (i) => (Math.PI * 2 * i) / N - Math.PI / 2;
+
+        ctx.strokeStyle = "#efe9e1"; ctx.lineWidth = 2;
+        for (let ring = 1; ring <= 4; ring++) {
+          const r = (R * ring) / 4;
+          ctx.beginPath();
+          for (let i = 0; i < N; i++) {
+            const x = cx + r * Math.cos(ang(i)), y = cy + r * Math.sin(ang(i));
+            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          }
+          ctx.closePath(); ctx.stroke();
+        }
+        for (let i = 0; i < N; i++) {
+          ctx.beginPath(); ctx.moveTo(cx, cy);
+          ctx.lineTo(cx + R * Math.cos(ang(i)), cy + R * Math.sin(ang(i)));
+          ctx.stroke();
+        }
+
+        ctx.beginPath();
+        DIMENSIONS.forEach((d, i) => {
+          const v = Math.max(rate[d.key], 6) / 100;
+          const x = cx + R * v * Math.cos(ang(i)), y = cy + R * v * Math.sin(ang(i));
+          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        });
+        ctx.closePath();
+        ctx.fillStyle = "rgba(201,167,162,.22)";
+        ctx.strokeStyle = "#c9a7a2"; ctx.lineWidth = 3;
+        ctx.fill(); ctx.stroke();
+
+        DIMENSIONS.forEach((d, i) => {
+          const v = Math.max(rate[d.key], 6) / 100;
+          const x = cx + R * v * Math.cos(ang(i)), y = cy + R * v * Math.sin(ang(i));
+          ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2);
+          ctx.fillStyle = d.color; ctx.fill();
+        });
+
+        ctx.fillStyle = "#45413c"; ctx.font = "bold 25px sans-serif";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        DIMENSIONS.forEach((d, i) => {
+          const r = R + 44;
+          ctx.fillText(d.name, cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i)));
+        });
+      }
+
+      function drawBars(ranked) {
+        const wrap = document.getElementById("bars");
+        wrap.innerHTML = "";
+        ranked.forEach((d) => {
+          const row = document.createElement("div");
+          row.className = "bar-row";
+          row.innerHTML =
+            '<span class="bar-name">' + d.name + "</span>" +
+            '<span class="bar-track"><span class="bar-fill" style="background:' + d.color + '"></span></span>' +
+            '<span class="bar-val">' + d.share.toFixed(1) + "%</span>";
+          wrap.appendChild(row);
+          requestAnimationFrame(() => {
+            row.querySelector(".bar-fill").style.width = d.share.toFixed(1) + "%";
+          });
+        });
+      }
+
+      document.getElementById("result-restart").addEventListener("click", () => {
+        for (let i = 0; i < answers.length; i++) answers[i] = null;
+        current = 0;
+        elBar.style.width = "0";
+        elProgress.setAttribute("aria-valuenow", "0");
+        showScreen("cover");
+      });
+    </script>
+  </body>
+</html>
